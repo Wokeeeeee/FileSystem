@@ -2,6 +2,7 @@
 
 import java.io.File;
 import java.io.IOException;
+import java.net.DatagramSocket;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -9,6 +10,7 @@ import java.net.Socket;
 public class FileServerMultiThread {
     ServerSocket serverSocket;
     private final int PORT = 9999;
+    private final int UDP_PORT=8888;
     private final File rootDir;
 
     public FileServerMultiThread(File rootDir) throws IOException {
@@ -33,7 +35,8 @@ public class FileServerMultiThread {
             Socket socket = null;
             try {
                 socket = serverSocket.accept();
-                Thread work = new Thread(new Handler(socket,this.rootDir));
+                DatagramSocket udpServer=new DatagramSocket(UDP_PORT);
+                Thread work = new Thread(new Handler(socket,this.rootDir,udpServer));
 
                 work.start();
             } catch (IOException e) {
