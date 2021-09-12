@@ -9,6 +9,7 @@ import java.net.Socket;
 
 public class FileServerMultiThread {
     ServerSocket serverSocket;
+    DatagramSocket udpServer;
     private final int PORT = 9999;
     private final int UDP_PORT=8888;
     private final File rootDir;
@@ -18,6 +19,7 @@ public class FileServerMultiThread {
             throw new IOException(rootDir + "不是目录");
         }
         serverSocket = new ServerSocket(PORT);
+        udpServer=new DatagramSocket(UDP_PORT);
         System.out.println("服务器启动。");
         this.rootDir = rootDir;
     }
@@ -35,7 +37,6 @@ public class FileServerMultiThread {
             Socket socket = null;
             try {
                 socket = serverSocket.accept();
-                DatagramSocket udpServer=new DatagramSocket(UDP_PORT);
                 Thread work = new Thread(new Handler(socket,this.rootDir,udpServer));
 
                 work.start();

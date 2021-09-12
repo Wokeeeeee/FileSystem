@@ -32,6 +32,7 @@ public class FileClient {
             String msg = null;
             while ((msg = in.nextLine()) != null) {
                 if (msg.equals("bye")) {
+                    pw.println(msg);
                     break; //退出
                 }
                 else if (msg.startsWith("get ")) {

@@ -63,7 +63,7 @@ public class Handler implements Runnable {
 
                 //todo
                 if (info.equals("bye")) {
-                    System.out.println("程序结束");
+                    System.out.println("结束连接: "+socket.getInetAddress() + ":" + socket.getPort());
                     break;
                 }
                 else if (info.equals("ls")) {
@@ -176,7 +176,6 @@ public class Handler implements Runnable {
         DatagramPacket recvPacket = new DatagramPacket(recvBuffer,
                 recvBuffer.length);
         udpServer.receive(recvPacket); //byte[] recvBuffer = new byte[1024];
-        System.out.println(recvPacket.getAddress());
 
         File[] files = rootDirStack.peek().listFiles();
         boolean isExist = false;
@@ -184,7 +183,7 @@ public class Handler implements Runnable {
             if (file.getName().equals(FileName)) {
                 isExist = true;
                 //用tcp尝试传输
-                System.out.println("文件存在，开始传输");
+                System.out.println("server: 文件存在，开始传输");
                 fr = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
                 String str = null;
                 //udp发送
@@ -212,7 +211,7 @@ public class Handler implements Runnable {
                     pw.println(str);
                 }*/
                 pw.println("传输成功");
-                System.out.println("传输成功");
+                System.out.println("server: 传输成功");
             }
         }
         if (!isExist) {
