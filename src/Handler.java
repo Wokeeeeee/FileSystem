@@ -40,6 +40,7 @@ public class Handler implements Runnable {
 
     /**
      * 初始化 io
+     *
      * @throws IOException
      */
     public void initStream() throws IOException {
@@ -63,7 +64,7 @@ public class Handler implements Runnable {
 
                 //todo
                 if (info.equals("bye")) {
-                    System.out.println("结束连接: "+socket.getInetAddress() + ":" + socket.getPort());
+                    System.out.println("结束连接: " + socket.getInetAddress() + ":" + socket.getPort());
                     break;
                 }
                 else if (info.equals("ls")) {
@@ -71,9 +72,15 @@ public class Handler implements Runnable {
                 }
                 else if (info.startsWith("cd ")) {
                     enterTargetDir(info.substring(3));
+/*                    String all[]=info.substring(3).split("\\s+");
+                    for (String str:all){
+                        System.out.println(str);
+                        enterTargetDir(str);
+                    }*/
                 }
                 else if (info.startsWith("get ")) {
-                    sendFileByUDP(info.substring(4));
+//                    sendFileByUDP(info.substring(4));
+                    getFile(info.substring(4));
                 }
                 else {
                     pw.println("unknown command, please enter again");
@@ -170,12 +177,24 @@ public class Handler implements Runnable {
         pw.println("end");
     }
 
-    private void sendFileByUDP(String FileName) throws IOException, InterruptedException {
+    private void getFile(String cmd) throws IOException, InterruptedException {
         //先从客户端获得客户端ip和port信息
         byte[] recvBuffer = new byte[1024];
         DatagramPacket recvPacket = new DatagramPacket(recvBuffer,
                 recvBuffer.length);
         udpServer.receive(recvPacket); //byte[] recvBuffer = new byte[1024];
+
+        String all[] = cmd.split("\\s+");
+
+        for (String str : all) {
+            System.out.println(str);
+            sendFileByUDP(str, recvPacket);
+        }
+        pw.println("end");
+    }
+
+    private void sendFileByUDP(String FileName, DatagramPacket recvPacket) throws IOException, InterruptedException {
+
 
         File[] files = rootDirStack.peek().listFiles();
         boolean isExist = false;
@@ -188,7 +207,7 @@ public class Handler implements Runnable {
                 String str = null;
                 //udp发送
                 byte[] data = Files.readAllBytes(Path.of(file.getPath()));
-                pw.println("size:"+data.length);
+                pw.println("fileInfo:" + FileName + "  " + data.length);
                 byte[] sendBuffer = new byte[1024];
                 int begin_point = 0;
                 while (begin_point < data.length) {
@@ -217,7 +236,7 @@ public class Handler implements Runnable {
         if (!isExist) {
             pw.println("该目录下不存在该文件，请重新输入文件名。");
         }
-        pw.println("end");
+//        pw.println("end");
     }
 
 }

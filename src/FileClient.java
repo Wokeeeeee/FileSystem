@@ -44,10 +44,13 @@ public class FileClient {
                         if (str.equals("end")) {
                             break;
                         }
-                        else if (str.startsWith("size:")) {
-                            System.out.println("开始接收文件，文件大小为：" + Integer.parseInt(str.substring(5)));
+                        else if (str.startsWith("fileInfo:")) {
+                            String all[] = str.substring(9).split("\\s+");
+                            String name=all[0];
+                            int size=Integer.parseInt(all[1]);
+                            System.out.println("开始接收文件，文件名为：" + name + "文件大小为：" + size);
                             System.out.println("----------------");
-                            downloadFileByUDP(msg.substring(4), Integer.parseInt(str.substring(5)));
+                            downloadFileByUDP(name,size);
                         }
                     }
                 }
@@ -102,10 +105,11 @@ public class FileClient {
         int begin_point = 0;
         while (begin_point < fileLength) {
             int write_length;
-            if (fileLength-begin_point>recvPacket.getData().length){
-                write_length=recvPacket.getData().length;
-            }else {
-                write_length=fileLength-begin_point;
+            if (fileLength - begin_point > recvPacket.getData().length) {
+                write_length = recvPacket.getData().length;
+            }
+            else {
+                write_length = fileLength - begin_point;
             }
             udpClient.receive(recvPacket);
             System.out.println(new String(recvPacket.getData()));
