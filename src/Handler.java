@@ -2,6 +2,7 @@ import java.io.*;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -59,15 +60,17 @@ public class Handler implements Runnable {
 
             String info = null;
             while (null != (info = br.readLine())) {
+                info=info.trim();
+//                System.out.println(info);
                 System.out.println(socket.getInetAddress() + ":" + socket.getPort() + ">  " + info);
 
 
                 //todo
-                if (info.equals("bye")) {
+                if (info.startsWith("bye")) {
                     System.out.println("结束连接: " + socket.getInetAddress() + ":" + socket.getPort());
                     break;
                 }
-                else if (info.equals("ls")) {
+                else if (info.startsWith("ls")) {
                     getDirList();
                 }
                 else if (info.startsWith("cd ")) {
@@ -84,6 +87,7 @@ public class Handler implements Runnable {
                 }
                 else {
                     pw.println("unknown command, please enter again");
+                    pw.println("end");
                 }
             }
         } catch (IOException | InterruptedException e) {
@@ -104,9 +108,10 @@ public class Handler implements Runnable {
      */
     private void getDirList() {
         File files[] = rootDirStack.peek().listFiles();
-
+        String str = null;
+        str = String.format("%-10s", "type") + String.format("%-40s", "name") + "  " + "size";
+        pw.println(str);
         for (File file : files) {
-            String str = null;
             if (file.isDirectory()) {
                 str = String.format("%-10s", "<dir>") + String.format("%-40s", file.getName()) + "  " + getDirSize(file);
             }
@@ -187,7 +192,7 @@ public class Handler implements Runnable {
         String all[] = cmd.split("\\s+");
 
         for (String str : all) {
-            System.out.println(str);
+//            System.out.println(str);
             sendFileByUDP(str, recvPacket);
         }
         pw.println("end");
@@ -200,6 +205,10 @@ public class Handler implements Runnable {
         boolean isExist = false;
         for (File file : files) {
             if (file.getName().equals(FileName)) {
+                if (!file.isFile()){
+                    pw.println("非文件形式，无法使用get");
+                    continue;
+                }
                 isExist = true;
                 //用tcp尝试传输
                 System.out.println("server: 文件存在，开始传输");

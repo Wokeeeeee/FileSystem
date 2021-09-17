@@ -27,11 +27,12 @@ public class FileClient {
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8));
             BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
             PrintWriter pw = new PrintWriter(bw, true);
+
             Scanner in = new Scanner(System.in); //接受用户信息
             //tcp发送消息
             String msg = null;
             while ((msg = in.nextLine()) != null) {
-                if (msg.equals("bye")) {
+                if (msg.startsWith("bye")) {
                     pw.println(msg);
                     break; //退出
                 }
@@ -51,6 +52,8 @@ public class FileClient {
                             System.out.println("开始接收文件，文件名为：" + name + "文件大小为：" + size);
                             System.out.println("----------------");
                             downloadFileByUDP(name,size);
+                        }else {
+                            System.out.println(str);
                         }
                     }
                 }
@@ -112,7 +115,7 @@ public class FileClient {
                 write_length = fileLength - begin_point;
             }
             udpClient.receive(recvPacket);
-            System.out.println(new String(recvPacket.getData()));
+//            System.out.println(new String(recvPacket.getData()));
             fout.write(recvPacket.getData(), 0, write_length);
             begin_point += recvPacket.getData().length;
         }
