@@ -86,6 +86,10 @@ public class FileClient {
         }
     }
 
+    /**
+     * udp connect
+     * @throws IOException
+     */
     private void connectByUDP() throws IOException {
         //先向服务器发送一段信息，让服务器知道客户端的IP信息
         byte[] info = "hello world!".getBytes();
@@ -96,6 +100,12 @@ public class FileClient {
 
     }
 
+    /**
+     * 根据文件大小 下载客户端发送的文件
+     * @param fileName
+     * @param fileLength
+     * @throws IOException
+     */
     private void downloadFileByUDP(String fileName, int fileLength) throws IOException {
         File file = new File(fileName);
         FileOutputStream fout = new FileOutputStream(file);
